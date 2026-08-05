@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Odyssey | Expanded Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@200;400&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --white: #ffffff;
+            --bg-dark: #050505;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg-dark);
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- AMBIENT ELEMENTS --- */
+        #bgCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: var(--gold); z-index: 2000; width: 0%;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* --- MUSIC TOGGLE INTERFACE --- */
+        .music-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 2500;
+            background: rgba(5, 5, 5, 0.75);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
+
+        /* --- HERO --- */
+        .hero-title {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 10vw, 5rem);
+            letter-spacing: 25px;
+            color: var(--gold);
+            margin: 0;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        /* --- GALLERY GRID --- */
+        .gallery-section {
+            padding: 100px 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .masonry-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-auto-rows: 160px;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .photo-card {
+            position: relative;
+            overflow: hidden;
+            background: #111;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .word-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .word-card p {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: var(--gold);
+            opacity: 0.6;
+            margin: 0;
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .card-tall { grid-row: span 3; min-height: 520px; }
+        .card-wide { grid-column: span 2; }
+        .card-big { grid-column: span 2; grid-row: span 2; min-height: 340px; }
+
+        .photo-card {
+            min-height: 260px;
+        }
+
+        .photo-card img, .photo-card video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: none;
+            transition: 1s ease;
+        }
+
+        .photo-card:hover {
+            transform: scale(1.03);
+            border-color: var(--gold);
+            z-index: 10;
+        }
+
+        .photo-card:hover img, .photo-card:hover video {
+            filter: grayscale(0%) brightness(1);
+        }
+
+        .card-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 40px;
+            background: rgba(0,0,0,0.55);
+            opacity: 0; transition: 0.5s;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; box-sizing: border-box;
+        }
+
+        .photo-card:hover .card-overlay { opacity: 1; }
+
+        .card-overlay h3 {
+            font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--gold); margin-bottom: 10px; letter-spacing: 2px;
+        }
+        
+        .card-overlay p {
+            font-family: 'Dancing Script', cursive; font-size: 1.4rem; color: var(--white); margin: 0;
+        }
+
+        /* --- THE LIVING LETTER SECTION --- */
+        .living-letter {
+            padding: 150px 5%;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .letter-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            line-height: 2;
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .letter-text span {
+            display: block;
+            width: 100%;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 1.2s all ease;
+        }
+
+        .letter-text span.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- REASONS LIST --- */
+        .reasons-box {
+            margin: 100px auto;
+            padding: 60px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            max-width: 800px;
+        }
+
+        .reason-item {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .reason-item::before {
+            content: '✦';
+            color: var(--gold);
+            margin-right: 20px;
+        }
+
+        /* --- FOOTER SURPRISE --- */
+        .final-promise {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%);
+        }
+
+        .heart-glow {
+            font-size: 5rem;
+            color: var(--gold);
+            animation: heartbeat 1.5s infinite;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+
+        .promise-text {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 1.5s ease;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .heart-glow:hover + .promise-text {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 30px var(--gold); }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-layout { grid-template-columns: 1fr; grid-auto-rows: auto; }
+            .card-wide, .card-big { grid-column: span 1; }
+            .word-card { display: flex; }
+        }
+    
+        .extra-photo-grid{
+         display:grid;
+         grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+         grid-auto-rows:140px;
+         gap:18px;
+         margin-top:40px;
+        }
+
+        .extra-photo-grid .photo-card img, .extra-photo-grid .photo-card video { width:100%; height:100%; object-fit:cover; }
+
+        .photo-card, .extra-photo-grid .photo-card {
+            min-height: 260px;
+            height: 260px;
+            grid-column: span 1;
+            grid-row: span 1;
+        }
+
+        .photo-card img, .photo-card video, .extra-photo-grid .photo-card img, .extra-photo-grid .photo-card video {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:none !important;
+            opacity:1 !important;
+        }
+
+        .card-tall, .card-wide, .card-big {
+            min-height:260px;
+            height:260px;
+            grid-column:span 1;
+            grid-row:span 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- SEQUENTIAL AUDIO TRACKS -->
+    <audio id="bgMusic1" preload="auto">
+        <source src="serak.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="bgMusic2" preload="auto">
+        <source src="تملي معاك.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-toggle" id="musicBtn">🔇</div>
+    <div class="scroll-progress" id="progress"></div>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="hero-title">
+        <h1>THE COLLECTION</h1>
+        <p style="letter-spacing: 8px; opacity: 0.6; font-family: 'Cinzel';">OUR ODYSSEY IN WORDS & LIGHT</p>
+    </div>
+
+    <section class="gallery-section">
+        <div class="masonry-layout">
+            
+            <!-- 10 NEW INITIAL PHOTOS ADDED HERE -->
+            <div class="photo-card">
+                <img src="photo49.jpg">
+                <div class="card-overlay">
+                    <h3>New Spark</h3>
+                    <p>"Where it all begins again."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo50.jpg">
+                <div class="card-overlay">
+                    <h3>Golden Hours</h3>
+                    <p>"Sunlight caught in our smiles."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo43.JPG">
+                <div class="card-overlay">
+                    <h3>First Light</h3>
+                    <p>"Dawn breaks with new promises."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo39.jpg">
+                <div class="card-overlay">
+                    <h3>Warmth</h3>
+                    <p>"Every touch holds a quiet story."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo38.jpg">
+                <div class="card-overlay">
+                    <h3>Serenity</h3>
+                    <p>"Peace found in your presence."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>Pure Magic</p></div>
+
+            <div class="photo-card">
+                <img src="photo37.jpg">
+                <div class="card-overlay">
+                    <h3>Endless Sky</h3>
+                    <p>"Looking forward together."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo31.jpg">
+                <div class="card-overlay">
+                    <h3>Sweet Echoes</h3>
+                    <p>"Voices carry love across time."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo30.jpg">
+                <div class="card-overlay">
+                    <h3>Harmony</h3>
+                    <p>"Two hearts in perfect rhythm."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo29.jpg">
+                <div class="card-overlay">
+                    <h3>Glimmer</h3>
+                    <p>"A sparkle in the dark."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo27.jpg">
+                <div class="card-overlay">
+                    <h3>Everlasting</h3>
+                    <p>"Boundless memories created daily."</p>
+                </div>
+            </div>
+
+            <!-- ORIGINAL PHOTOS START HERE -->
+            <div class="photo-card card-tall">
+                <img src="photo1.png">
+                <div class="card-overlay">
+                    <h3>The Beginning</h3>
+                    <p>"I still remember the first time I saw you."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>Always you...</p></div>
+            
+            <div class="photo-card">
+                <img src="photo2.png">
+                <div class="card-overlay">
+                    <h3>Laughter</h3>
+                    <p>"Your laugh is my favorite song."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>My Sunshine</p></div>
+
+            <div class="photo-card card-big">
+                <img src="photo3.JPG">
+                <div class="card-overlay">
+                    <h3>Our World</h3>
+                    <p>"Every quiet moment is a masterpiece."</p>
+                </div>
+            </div>
+
+            <div class="photo-card">
+                <img src="photo4.JPG">
+                <div class="card-overlay">
+                    <h3>Reflections</h3>
+                    <p>"I see my future in your eyes."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>Soulmates</p></div>
+
+            <div class="photo-card card-wide">
+                <img src="photo5.jpg">
+                <div class="card-overlay">
+                    <h3>Celestial</h3>
+                    <p>"We are written in the stars."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>Infinity</p></div>
+
+            <div class="photo-card">
+                <img src="photo6.JPG">
+                <div class="card-overlay">
+                    <h3>Whispers</h3>
+                    <p>"Secrets shared in the moonlight."</p>
+                </div>
+            </div>
+
+            <div class="photo-card card-tall">
+                <img src="photo7.jpg">
+                <div class="card-overlay">
+                    <h3>The Journey</h3>
+                    <p>"Walking side by side, forever."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>Unconditional</p></div>
+
+            <div class="photo-card">
+                <img src="photo8.png">
+                <div class="card-overlay">
+                    <h3>Presence</h3>
+                    <p>"Just being near you is enough."</p>
+                </div>
+            </div>
+            
+            <div class="photo-card card-big">
+                <img src="photo9.jpg">
+                <div class="card-overlay">
+                    <h3>Another Chapter</h3>
+                    <p>"Another memory that became part of our Odyssey."</p>
+                </div>
+            </div>
+
+            <div class="word-card"><p>More than words...</p></div>
+
+            <div class="photo-card">
+                <img src="photo11.jpg">
+                <div class="card-overlay">
+                    <h3>Little Moments</h3>
+                    <p>"The smallest moments became the biggest memories."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- EXTRA PHOTO PLACES -->
+<div class="extra-photo-grid">
+<div class="photo-card"><img src="photo12.jpg"><div class="card-overlay"><h3>Memory 12</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo13.jpg"><div class="card-overlay"><h3>Memory 13</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo14.jpg"><div class="card-overlay"><h3>Memory 14</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo15.jpg"><div class="card-overlay"><h3>Memory 15</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo16.jpg"><div class="card-overlay"><h3>Memory 16</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo17.jpg"><div class="card-overlay"><h3>Memory 17</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo18.jpg"><div class="card-overlay"><h3>Memory 18</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo19.jpg"><div class="card-overlay"><h3>Memory 19</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo20.jpg"><div class="card-overlay"><h3>Memory 20</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo21.jpg"><div class="card-overlay"><h3>Memory 21</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo22.jpg"><div class="card-overlay"><h3>Memory 22</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo23.jpg"><div class="card-overlay"><h3>Memory 23</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo24.jpg"><div class="card-overlay"><h3>Memory 24</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo25.jpg"><div class="card-overlay"><h3>Memory 25</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo26.jpg"><div class="card-overlay"><h3>Memory 26</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="tabla.jpg"><div class="card-overlay"><h3>Memory 27</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo28.jpg"><div class="card-overlay"><h3>Memory 28</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo29.jpg"><div class="card-overlay"><h3>Memory 29</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="camp.jpg"><div class="card-overlay"><h3>Memory 30</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="face5.jpg"><div class="card-overlay"><h3>Memory 31</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo32.jpg"><div class="card-overlay"><h3>Memory 32</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo33.jpg"><div class="card-overlay"><h3>Memory 33</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo34.jpg"><div class="card-overlay"><h3>Memory 34</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo35.jpg"><div class="card-overlay"><h3>Memory 35</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo36.jpg"><div class="card-overlay"><h3>Memory 36</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo37.jpg"><div class="card-overlay"><h3>Memory 37</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo38.jpg"><div class="card-overlay"><h3>Memory 38</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo39.jpg"><div class="card-overlay"><h3>Memory 39</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo40.jpeg"><div class="card-overlay"><h3>Memory 40</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo41.jpg"><div class="card-overlay"><h3>Memory 41</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo42.jpg"><div class="card-overlay"><h3>Memory 42</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="face4.jpg"><div class="card-overlay"><h3>Memory 43</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo44.jpg"><div class="card-overlay"><h3>Memory 44</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo45.jpg"><div class="card-overlay"><h3>Memory 45</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo46.jpg"><div class="card-overlay"><h3>Memory 46</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo47.jpg"><div class="card-overlay"><h3>Memory 47</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo48.png"><div class="card-overlay"><h3>Memory 48</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo49.jpg"><div class="card-overlay"><h3>Memory 49</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo50.jpg"><div class="card-overlay"><h3>Memory 50</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo51.jpg"><div class="card-overlay"><h3>Memory 51</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo52.jpg"><div class="card-overlay"><h3>Memory 52</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo53.jpg"><div class="card-overlay"><h3>Memory 53</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo54.jpg"><div class="card-overlay"><h3>Memory 54</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo55.jpg"><div class="card-overlay"><h3>Memory 55</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo56.jpg"><div class="card-overlay"><h3>Memory 56</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo57.jpg"><div class="card-overlay"><h3>Memory 57</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo58.jpg"><div class="card-overlay"><h3>Memory 58</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo59.jpg"><div class="card-overlay"><h3>Memory 59</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo60.jpg"><div class="card-overlay"><h3>Memory 60</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="photo61.jpg"><div class="card-overlay"><h3>Memory 61</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo62.jpg"><div class="card-overlay"><h3>Memory 62</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo63.jpg"><div class="card-overlay"><h3>Memory 63</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+
+<!-- VIDEOS -->
+<div class="photo-card"><video src="set bet.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 64</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video1.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 65</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="video2.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 66</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video3.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 67</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video4.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 68</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video5.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 69</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video6.MOV" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 70</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="video7.MOV" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 71</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="video8.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 72</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="zipper.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 73</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="wawa.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 74</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="run.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 75</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="play.mov" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 76</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="m3za.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 77</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="m5no2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 78</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="m7fza.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 79</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="m7fza2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 80</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="handwrite.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 81</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="laugh.mov" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 82</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="domino.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 83</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="bshamel.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 84</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="5sana.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 85</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="7ok4a 2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 86</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="70k4a 1.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 87</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+
+<div class="photo-card"><img src="c1.jpg"><div class="card-overlay"><h3>Memory 88</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c10.jpg"><div class="card-overlay"><h3>Memory 89</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c22.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 90</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="c11.jpg"><div class="card-overlay"><h3>Memory 91</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c12.jpg"><div class="card-overlay"><h3>Memory 92</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c23.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 93</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c24.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 94</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c25.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 95</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="c26.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 96</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c27.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 97</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c28.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 98</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c29.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 99</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c30.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 100</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="c31.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 101</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c32.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 102</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c33.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 103</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c34.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 104</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c35.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 105</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><video src="c36.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 106</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c37.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 107</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c38.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 108</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="c40.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 109</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c39.jpg"><div class="card-overlay"><h3>Memory 110</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Another page of our story...</p></div>
+
+<div class="photo-card"><img src="c13.jpg"><div class="card-overlay"><h3>Memory 111</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c2.jpg"><div class="card-overlay"><h3>Memory 112</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c3.jpg"><div class="card-overlay"><h3>Memory 113</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c4.jpg"><div class="card-overlay"><h3>Memory 114</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c5.jpg"><div class="card-overlay"><h3>Memory 115</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Capturing the magic...</p></div>
+
+<div class="photo-card"><img src="c6.jpg"><div class="card-overlay"><h3>Memory 116</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c7.jpg"><div class="card-overlay"><h3>Memory 117</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c8.jpg"><div class="card-overlay"><h3>Memory 118</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c9.jpg"><div class="card-overlay"><h3>Memory 119</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c14.jpg"><div class="card-overlay"><h3>Memory 120</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Moments in time...</p></div>
+
+<div class="photo-card"><img src="c15.jpg"><div class="card-overlay"><h3>Memory 121</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c16.jpg"><div class="card-overlay"><h3>Memory 122</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c17.jpg"><div class="card-overlay"><h3>Memory 123</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c18.jpg"><div class="card-overlay"><h3>Memory 124</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c19.jpg"><div class="card-overlay"><h3>Memory 125</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Treasured forever...</p></div>
+
+<div class="photo-card"><img src="c20.jpg"><div class="card-overlay"><h3>Memory 126</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="c21.jpg"><div class="card-overlay"><h3>Memory 127</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+
+<!-- FULL EXTENSION 128 TO 200 (MANUAL CARDS) -->
+<div class="photo-card"><img src="hair6.jpg"><div class="card-overlay"><h3>Memory 128</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="hair 2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 129</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="hair.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 130</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Every step with you...</p></div>
+
+<div class="photo-card"><video src="hair3.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 131</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="nails 1.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 132</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="nails 2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 133</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="nails 3.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 134</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="nails4.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 135</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Unforgettable moments...</p></div>
+
+<div class="photo-card"><video src="tik1.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 136</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="tik2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 137</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="terms.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 138</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="terms2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 139</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="terms3.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 140</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>My favorite memory...</p></div>
+
+<div class="photo-card"><img src="photo66.JPG"><div class="card-overlay"><h3>Memory 141</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo67.JPG"><div class="card-overlay"><h3>Memory 142</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo68.jpg"><div class="card-overlay"><h3>Memory 143</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo69.jpg"><div class="card-overlay"><h3>Memory 144</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo70.jpg"><div class="card-overlay"><h3>Memory 145</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>In every lifetime...</p></div>
+
+<div class="photo-card"><img src="photo71.JPG"><div class="card-overlay"><h3>Memory 146</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo72.JPG"><div class="card-overlay"><h3>Memory 147</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo73.JPG"><div class="card-overlay"><h3>Memory 148</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo74.jpeg"><div class="card-overlay"><h3>Memory 149</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo75.JPG"><div class="card-overlay"><h3>Memory 150</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Forever & Always...</p></div>
+
+<div class="photo-card"><img src="photo76.jpeg"><div class="card-overlay"><h3>Memory 151</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo77.JPG"><div class="card-overlay"><h3>Memory 152</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="v1.MP4"><div class="card-overlay"><h3>Memory 153</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="v2.MP4"><div class="card-overlay"><h3>Memory 154</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="v3.MP4"><div class="card-overlay"><h3>Memory 155</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Pure magic...</p></div>
+
+<div class="photo-card"><video src="v4.MP4"><div class="card-overlay"><h3>Memory 156</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="v5.MP4"><div class="card-overlay"><h3>Memory 157</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo78.jpg"><div class="card-overlay"><h3>Memory 158</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo79.jpg"><div class="card-overlay"><h3>Memory 159</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo80.jpg"><div class="card-overlay"><h3>Memory 160</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Endless laughter...</p></div>
+
+<div class="photo-card"><img src="photo81.jpg"><div class="card-overlay"><h3>Memory 161</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo82.jpg"><div class="card-overlay"><h3>Memory 162</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo83.jpg"><div class="card-overlay"><h3>Memory 163</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo84.jpg"><div class="card-overlay"><h3>Memory 164</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo85.jpg"><div class="card-overlay"><h3>Memory 165</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Written in stars...</p></div>
+
+<div class="photo-card"><img src="photo86.jpg"><div class="card-overlay"><h3>Memory 166</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo87.jpg"><div class="card-overlay"><h3>Memory 167</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo88.jpg"><div class="card-overlay"><h3>Memory 168</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo89.jpg"><div class="card-overlay"><h3>Memory 169</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo90.jpg"><div class="card-overlay"><h3>Memory 170</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Our sweet journey...</p></div>
+
+<div class="photo-card"><img src="photo91.jpg"><div class="card-overlay"><h3>Memory 171</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo92.jpg"><div class="card-overlay"><h3>Memory 172</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo93.jpg"><div class="card-overlay"><h3>Memory 173</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo94.jpg"><div class="card-overlay"><h3>Memory 174</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo95.jpeg"><div class="card-overlay"><h3>Memory 175</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>Holding your hand...</p></div>
+
+<div class="photo-card"><img src="photo96.jpeg"><div class="card-overlay"><h3>Memory 176</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo97.jpeg"><div class="card-overlay"><h3>Memory 177</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo98.png"><div class="card-overlay"><h3>Memory 178</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo99.jpg"><div class="card-overlay"><h3>Memory 179</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo100.jpeg"><div class="card-overlay"><h3>Memory 180</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>My safe space...</p></div>
+
+<div class="photo-card"><img src="photo101.jpeg"><div class="card-overlay"><h3>Memory 181</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo102.jpeg"><div class="card-overlay"><h3>Memory 182</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo103.jpeg"><div class="card-overlay"><h3>Memory 183</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo104.jpeg"><div class="card-overlay"><h3>Memory 184</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo105.jpg"><div class="card-overlay"><h3>Memory 185</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>A thousand feelings...</p></div>
+
+<div class="photo-card"><img src="photo106.jpg"><div class="card-overlay"><h3>Memory 186</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo107.jpeg"><div class="card-overlay"><h3>Memory 187</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo188.jpg"><div class="card-overlay"><h3>Memory 188</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo189.jpg"><div class="card-overlay"><h3>Memory 189</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo190.jpg"><div class="card-overlay"><h3>Memory 190</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>My whole universe...</p></div>
+
+<div class="photo-card"><img src="photo191.jpg"><div class="card-overlay"><h3>Memory 191</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo192.jpg"><div class="card-overlay"><h3>Memory 192</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo193.jpg"><div class="card-overlay"><h3>Memory 193</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo194.jpg"><div class="card-overlay"><h3>Memory 194</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo195.jpg"><div class="card-overlay"><h3>Memory 195</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="word-card"><p>To eternity...</p></div>
+
+<div class="photo-card"><img src="photo196.jpg"><div class="card-overlay"><h3>Memory 196</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo197.jpg"><div class="card-overlay"><h3>Memory 197</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo198.jpg"><div class="card-overlay"><h3>Memory 198</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo199.jpg"><div class="card-overlay"><h3>Memory 199</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo200.jpg"><div class="card-overlay"><h3>Memory 200</h3><p>Our Odyssey carries on forever...</p></div></div>
+</div>
+
+    <section class="living-letter">
+        <div class="letter-text">
+            <span class="reveal-item">To my favorite person in this entire world...</span>
+            <span class="reveal-item">This page is not just a collection of photos. It is a place where I keep every feeling that words cannot explain.</span>
+            <span class="reveal-item">Every picture has a memory. Every memory has a story. And every story reminds me how special this journey is.</span>
+            <span class="reveal-item">Our Odyssey was never about reaching a destination. It was about every step,<br>every laugh,<br>every difficult moment,<br>and every time we chose to continue.</span>
+            <span class="reveal-item">You became a part of my days, my thoughts, and my dreams.</span>
+            <span class="reveal-item">Some moments disappear with time, but some moments become a part of who we are.</span>
+            <span class="reveal-item">Thank you for every smile. Thank you for every memory. Thank you for being a beautiful chapter in my story.</span>
+            <span class="reveal-item">And this is only the beginning of our Odyssey...</span>
+        </div>
+        
+        <div class="letter-text">
+            <span class="reveal-item">From the moment you walked into my life, something inside me changed forever.</span>
+            <span class="reveal-item">The world became brighter, the days became warmer, and even the smallest moments started carrying a special meaning.</span>
+            <span class="reveal-item">You became the beautiful story I never knew I was waiting to write.</span>
+            <span class="reveal-item">Every smile of yours became a memory I wanted to keep. Every word from you became a melody my heart wanted to hear again.</span>
+            <span class="reveal-item">I love the way you laugh. I love the way your eyes shine when you are happy. I love the way your presence can turn an ordinary moment into something unforgettable.</span>
+            <span class="reveal-item">You are my peaceful place in a busy world. You are the comfort I search for, the happiness I never want to lose, and the adventure I always want to continue.</span>
+            <span class="reveal-item">I promise to stand beside you through every chapter, to celebrate your happiness, to support your dreams, and to remind you every day how precious you are.</span>
+            <span class="reveal-item">Thank you for every laugh we shared. Thank you for every memory we created. Thank you for becoming one of the most beautiful parts of my life.</span>
+            <span class="reveal-item">If my heart could write a book, every page would have a little piece of you.</span>
+            <span class="reveal-item">Your smile would be the sunrise, your voice would be the favorite song, and your kindness would be the reason every chapter feels special.</span>
+            <span class="reveal-item">I don't love you only for the moments we have today. I love every dream, every future memory, and every beautiful chapter that is still waiting for us.</span>
+            <span class="reveal-item">You are not just a person in my story. You are the reason the story became worth telling.</span>
+            <span class="reveal-item">No matter how many days pass, no matter how many memories we create, a part of my heart will always be grateful that I found you.</span>
+            <span class="reveal-item">Our Odyssey is not a finished story. It is a journey written with love, with memories, with endless feelings, and with a thousand moments still waiting to happen.</span>
+            <span class="reveal-item">Forever grateful. Forever thankful. Forever keeping these memories close to my heart.</span>
+            <div class="letter-signature">Forever yours, [MISHA] 💕</div>
+        </div>
+    </section>
+
+    <div class="final-promise">
+        <div class="heart-glow">❤️</div>
+        <div class="promise-text">
+            "I will always be your biggest fan, your best friend, and your person. Forever and ever."
+        </div>
+        <p style="font-family: 'Cinzel'; letter-spacing: 5px; margin-top: 20px; opacity: 0.5;">HOVER FOR MY PROMISE</p>
+    </div>
+    <div class="letter-card fade-in"></div>
+
+    <script>
+        // --- TWO SONGS SEQUENTIAL PLAYBACK LOGIC ---
+        const music1 = document.getElementById('bgMusic1');
+        const music2 = document.getElementById('bgMusic2');
+        const musicBtn = document.getElementById('musicBtn');
+
+        let currentTrack = music1;
+
+        function playCurrentTrack() {
+            currentTrack.play().then(() => {
+                musicBtn.textContent = '🎵';
+            }).catch(() => {
+                console.log("Audio play postponed pending user interaction.");
+            });
+        }
+
+        music1.addEventListener('ended', () => {
+            currentTrack = music2;
+            playCurrentTrack();
+        });
+
+        music2.addEventListener('ended', () => {
+            currentTrack = music1;
+            playCurrentTrack();
+        });
+
+        window.addEventListener('load', playCurrentTrack);
+        window.addEventListener('click', () => { if (currentTrack.paused) playCurrentTrack(); }, { once: true });
+        window.addEventListener('scroll', () => { if (currentTrack.paused) playCurrentTrack(); }, { once: true });
+
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentTrack.paused) {
+                playCurrentTrack();
+            } else {
+                currentTrack.pause();
+                musicBtn.textContent = '🔇';
+            }
+        });
+        
+        // --- SMART VIDEO PERFORMANCE MANAGEMENT (ANTI-LAG) ---
+        // Pauses off-screen videos dynamically to ensure zero browser lag with dozens of media items.
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(err => {
+                            console.log("Video play handling:", err);
+                        });
+                    }
+                } else {
+                    video.pause();
+                }
+            });
+        }, {
+            rootMargin: '100px 0px',
+            threshold: 0.01
+        });
+
+        document.querySelectorAll('video').forEach(video => {
+            // Ensure muted state via JS property as well for strict browser policy adherence
+            video.muted = true;
+            videoObserver.observe(video);
+        });
+
+        // --- BACKGROUND CANVAS PARTICLES ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let items = ['❤️', '✨', '💋', '▫️'];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progress").style.width = scrolled + "%";
+            
+            document.querySelectorAll('.reveal-item').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if(rect.top < window.innerHeight * 0.8) {
+                    el.classList.add('reveal');
+                }
+            });
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 15 + 5;
+                this.char = items[Math.floor(Math.random() * items.length)];
+                this.speed = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random() * 0.3;
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = "#d4af37";
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText(this.char, this.x, this.y);
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -20) this.y = canvas.height + 20;
+            }
+        }
+
+        function init() {
+            resize();
+            for(let i=0; i<60; i++) particles.push(new Particle());
+            animate();
+        }
+
+        function animate() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        init();
+    </script>
+</body>
+</html>
