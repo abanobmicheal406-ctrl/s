@@ -21,6 +21,58 @@
             scroll-behavior: smooth;
         }
 
+        /* --- PASSWORD PROTECTION STYLES --- */
+        #password-protection {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: var(--bg-dark);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #password-protection input {
+            padding: 12px 20px;
+            margin-top: 20px;
+            border: 1px solid var(--gold);
+            background: transparent;
+            color: #fff;
+            border-radius: 25px;
+            text-align: center;
+            font-size: 1.1rem;
+            outline: none;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+
+        #password-protection button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: var(--gold);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #password-protection button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        #error-msg {
+            color: #ff4d4d;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
         /* --- AMBIENT ELEMENTS --- */
         #bgCanvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -304,88 +356,17 @@
             grid-row:span 1;
         }
     </style>
-    <style>
-    /* شاشة كلمة السر */
-    #password-protection {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        background-color: #050505;
-        z-index: 99999;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #d4af37;
-        font-family: 'Montserrat', sans-serif;
-    }
-
-    #password-protection input {
-        padding: 12px 20px;
-        margin-top: 20px;
-        border: 1px solid #d4af37;
-        background: transparent;
-        color: #fff;
-        border-radius: 25px;
-        text-align: center;
-        font-size: 1.1rem;
-        outline: none;
-    }
-
-    #password-protection button {
-        margin-top: 15px;
-        padding: 10px 30px;
-        background: #d4af37;
-        color: #050505;
-        border: none;
-        border-radius: 25px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    #password-protection button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-    }
-
-    #error-msg {
-        color: #ff4d4d;
-        margin-top: 15px;
-        display: none;
-        font-size: 0.9rem;
-    }
-</style>
 </head>
 <body>
-    <!-- واجهة كلمة السر -->
-<div id="password-protection">
-    <h2 style="font-family: 'Cinzel', serif; letter-spacing: 3px;">ENTER PASSWORD</h2>
-    <input type="password" id="passInput" placeholder="Password...">
-    <button onclick="checkPassword()">Unlock</button>
-    <p id="error-msg">كلمة السر غير صحيحة، حاول مرة أخرى!</p>
-</div>
 
-<script>
-    function checkPassword() {
-        const correctPassword = "2388"; // <-- غير كلمة السر هنا
-        const userEntered = document.getElementById("passInput").value;
-        const errorMsg = document.getElementById("error-msg");
+    <!-- PASSWORD OVERLAY -->
+    <div id="password-protection">
+        <h2 style="font-family: 'Cinzel', serif; letter-spacing: 3px;">ENTER PASSWORD</h2>
+        <input type="password" id="passInput" placeholder="Password...">
+        <button onclick="checkPassword()">Unlock</button>
+        <p id="error-msg">كلمة السر غير صحيحة، حاول مرة أخرى!</p>
+    </div>
 
-        if (userEntered === correctPassword) {
-            document.getElementById("password-protection").style.display = "none";
-        } else {
-            errorMsg.style.display = "block";
-        }
-    }
-
-    // السماح بالضغط على Enter للفتح
-    document.getElementById("passInput").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            checkPassword();
-        }
-    });
-</script>
     <!-- SEQUENTIAL AUDIO TRACKS -->
     <audio id="bgMusic1" preload="auto">
         <source src="serak.mp3" type="audio/mpeg">
@@ -628,8 +609,8 @@
 <div class="photo-card"><img src="photo40.jpeg"><div class="card-overlay"><h3>Memory 40</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="word-card"><p>Another page of our story...</p></div>
 
-<div class="photo-card"><img src="photo41.JPG"><div class="card-overlay"><h3>Memory 41</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
-<div class="photo-card"><img src="photo42.JPG"><div class="card-overlay"><h3>Memory 42</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo41."><div class="card-overlay"><h3>Memory 41</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><img src="photo42.jpg"><div class="card-overlay"><h3>Memory 42</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><img src="face4.jpg"><div class="card-overlay"><h3>Memory 43</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><img src="photo44.jpg"><div class="card-overlay"><h3>Memory 44</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><img src="photo45.jpg"><div class="card-overlay"><h3>Memory 45</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
@@ -680,7 +661,7 @@
 <div class="word-card"><p>Another page of our story...</p></div>
 
 <div class="photo-card"><video src="play.mov" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 76</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
-<div class="photo-card"><video src="m3za.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 77</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="m3za.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 77</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><video src="m5no2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 78</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><video src="m7fza.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 79</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><video src="m7fza2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 80</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
@@ -693,8 +674,8 @@
 <div class="photo-card"><video src="5sana.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 85</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="word-card"><p>Another page of our story...</p></div>
 
-<div class="photo-card"><video src="7ok4a 2.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 86</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
-<div class="photo-card"><video src="70k4a 1.mp4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 87</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="7ok4a 2.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 86</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
+<div class="photo-card"><video src="70k4a 1.MP4" autoplay loop muted playsinline preload="metadata"></video><div class="card-overlay"><h3>Memory 87</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 
 <div class="photo-card"><img src="c1.jpg"><div class="card-overlay"><h3>Memory 88</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
 <div class="photo-card"><img src="c10.jpg"><div class="card-overlay"><h3>Memory 89</h3><p>Another beautiful chapter of our Odyssey.</p></div></div>
@@ -899,6 +880,25 @@
     <div class="letter-card fade-in"></div>
 
     <script>
+        // --- PASSWORD VERIFICATION LOGIC ---
+        function checkPassword() {
+            const correctPassword = "2388"; // <-- يمكنك تغيير كلمة السر هنا
+            const userEntered = document.getElementById("passInput").value;
+            const errorMsg = document.getElementById("error-msg");
+
+            if (userEntered === correctPassword) {
+                document.getElementById("password-protection").style.display = "none";
+            } else {
+                errorMsg.style.display = "block";
+            }
+        }
+
+        document.getElementById("passInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+
         // --- TWO SONGS SEQUENTIAL PLAYBACK LOGIC ---
         const music1 = document.getElementById('bgMusic1');
         const music2 = document.getElementById('bgMusic2');
