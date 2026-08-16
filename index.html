@@ -304,8 +304,88 @@
             grid-row:span 1;
         }
     </style>
+    <style>
+    /* شاشة كلمة السر */
+    #password-protection {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background-color: #050505;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #d4af37;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    #password-protection input {
+        padding: 12px 20px;
+        margin-top: 20px;
+        border: 1px solid #d4af37;
+        background: transparent;
+        color: #fff;
+        border-radius: 25px;
+        text-align: center;
+        font-size: 1.1rem;
+        outline: none;
+    }
+
+    #password-protection button {
+        margin-top: 15px;
+        padding: 10px 30px;
+        background: #d4af37;
+        color: #050505;
+        border: none;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #password-protection button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    }
+
+    #error-msg {
+        color: #ff4d4d;
+        margin-top: 15px;
+        display: none;
+        font-size: 0.9rem;
+    }
+</style>
 </head>
 <body>
+    <!-- واجهة كلمة السر -->
+<div id="password-protection">
+    <h2 style="font-family: 'Cinzel', serif; letter-spacing: 3px;">ENTER PASSWORD</h2>
+    <input type="password" id="passInput" placeholder="Password...">
+    <button onclick="checkPassword()">Unlock</button>
+    <p id="error-msg">كلمة السر غير صحيحة، حاول مرة أخرى!</p>
+</div>
+
+<script>
+    function checkPassword() {
+        const correctPassword = "2388"; // <-- غير كلمة السر هنا
+        const userEntered = document.getElementById("passInput").value;
+        const errorMsg = document.getElementById("error-msg");
+
+        if (userEntered === correctPassword) {
+            document.getElementById("password-protection").style.display = "none";
+        } else {
+            errorMsg.style.display = "block";
+        }
+    }
+
+    // السماح بالضغط على Enter للفتح
+    document.getElementById("passInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            checkPassword();
+        }
+    });
+</script>
     <!-- SEQUENTIAL AUDIO TRACKS -->
     <audio id="bgMusic1" preload="auto">
         <source src="serak.mp3" type="audio/mpeg">
