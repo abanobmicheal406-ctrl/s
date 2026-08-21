@@ -360,6 +360,36 @@
             grid-column:span 1;
             grid-row:span 1;
         }
+         /* --- NEXT PAGE BUTTON STYLE --- */
+        .next-page-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 0 100px 0;
+            background: radial-gradient(circle, rgba(212,175,55,0.02) 0%, transparent 70%);
+        }
+
+        .next-page-btn {
+            font-family: 'Cinzel', serif;
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+            cursor: pointer;
+        }
+
+        .next-page-btn:hover {
+            background: var(--gold);
+            color: var(--bg-dark);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -883,6 +913,12 @@
         <p style="font-family: 'Cinzel'; letter-spacing: 5px; margin-top: 20px; opacity: 0.5;">HOVER FOR MY PROMISE</p>
     </div>
     <div class="letter-card fade-in"></div>
+     <!-- --- NEXT PAGE BUTTON --- -->
+    <div class="next-page-container">
+        <a href="misha.html" target="_blank" class="next-page-btn">
+            Explore Next Chapter ✨
+        </a>
+    </div>
 
     <script>
         // --- PASSWORD VERIFICATION LOGIC ---
