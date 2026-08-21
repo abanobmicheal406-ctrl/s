@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandra & Misha | Enhanced Handcrafted Storyboard</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color: #2b2b2b;
+      font-family: 'Kalam', cursive;
+    }
+
+    /* -------------------------------------------------------------
+       ANIMATED MOTION BACKGROUND LAYER
+    ------------------------------------------------------------- */
+    .animated-bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(-45deg, #f4efea, #e8dfd8, #fce7f3, #fef08a);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* WHITEBOARD / GRAPH PAPER OVERLAY PATTERN */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: 
+        radial-gradient(#d1c7bd 1px, transparent 1px),
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px, 20px 20px, 20px 20px;
+    }
+
+    /* BACKGROUND CANVAS FOR DYNAMIC PENCIL SKETCH PARTICLES */
+    #sketchCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .font-script {
+      font-family: 'Caveat', cursive;
+    }
+
+    /* DECK CONTAINER */
+    .deck-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    /* SLIDE TRANSITIONS */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.9) rotate(-3deg) translateY(50px);
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) rotate(0deg) translateY(0);
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .slide.prev-slide {
+      opacity: 0;
+      transform: scale(0.85) rotate(-5deg) translateX(-100%);
+    }
+
+    .slide.next-slide {
+      opacity: 0;
+      transform: scale(0.85) rotate(5deg) translateX(100%);
+    }
+
+    /* LAYOUT STRUCTURE */
+    .slide-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      max-width: 920px;
+      width: 100%;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .slide-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* GRAPHIC STAGE WITH ENHANCED DOODLES */
+    .shape-stage {
+      width: 100%;
+      height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* FLOATING HANDCRAFTED DOODLES IN STAGES */
+    .doodle-element {
+      position: absolute;
+      pointer-events: none;
+      z-index: 12;
+      opacity: 0.85;
+    }
+
+    .doodle-star {
+      top: 5px;
+      left: 10px;
+      animation: spinSlow 8s linear infinite;
+    }
+
+    .doodle-heart {
+      bottom: 10px;
+      right: 15px;
+      animation: pulseHeart 1.5s ease-in-out infinite alternate;
+    }
+
+    .doodle-spiral {
+      top: 20px;
+      right: 20px;
+      animation: floatNote 3s ease-in-out infinite;
+    }
+
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes pulseHeart {
+      0% { transform: scale(0.9) rotate(-5deg); }
+      100% { transform: scale(1.2) rotate(5deg); }
+    }
+
+    /* VECTOR MOTION CHARACTER ANIMATIONS */
+    .sketch-character {
+      position: absolute;
+      z-index: 15;
+      pointer-events: none;
+      filter: drop-shadow(2px 3px 0px rgba(0,0,0,0.15));
+    }
+
+    /* BIG DANCING CHARACTER (COVER SLIDE) */
+    .big-dancer-container {
+      margin: 0 auto 15px auto;
+      width: 140px;
+      height: 160px;
+      position: relative;
+    }
+
+    .big-dancer-svg {
+      width: 100%;
+      height: 100%;
+      animation: dancerBodyBounce 0.8s infinite alternate ease-in-out;
+    }
+
+    @keyframes dancerBodyBounce {
+      0% { transform: translateY(0px) rotate(-2deg); }
+      100% { transform: translateY(-14px) rotate(3deg); }
+    }
+
+    .dancer-head {
+      transform-origin: 50px 25px;
+      animation: headBob 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes headBob {
+      0% { transform: scale(1) rotate(-5deg); }
+      100% { transform: scale(1.08) rotate(8deg); }
+    }
+
+    .dancer-arm-left {
+      transform-origin: 50px 42px;
+      animation: armWaveLeft 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes armWaveLeft {
+      0% { transform: rotate(-10deg); }
+      100% { transform: rotate(-85deg); }
+    }
+
+    .dancer-arm-right {
+      transform-origin: 50px 42px;
+      animation: armWaveRight 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes armWaveRight {
+      0% { transform: rotate(75deg); }
+      100% { transform: rotate(5deg); }
+    }
+
+    .dancer-leg-left {
+      transform-origin: 50px 75px;
+      animation: legMoveLeft 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes legMoveLeft {
+      0% { transform: rotate(-8deg); }
+      100% { transform: rotate(18deg); }
+    }
+
+    .dancer-leg-right {
+      transform-origin: 50px 75px;
+      animation: legMoveRight 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes legMoveRight {
+      0% { transform: rotate(12deg); }
+      100% { transform: rotate(-15deg); }
+    }
+
+    .note-float-1 {
+      position: absolute;
+      top: 10px;
+      left: -10px;
+      animation: floatNote 2s infinite ease-in-out;
+    }
+    .note-float-2 {
+      position: absolute;
+      top: 20px;
+      right: -10px;
+      animation: floatNote 2.4s infinite ease-in-out 0.4s;
+    }
+    @keyframes floatNote {
+      0%, 100% { transform: translateY(0) rotate(0deg) scale(0.9); opacity: 0.6; }
+      50% { transform: translateY(-16px) rotate(15deg) scale(1.15); opacity: 1; }
+    }
+
+    /* SIDE MOTION CHARACTERS FOR STAGES */
+    .char-bounce {
+      bottom: -10px;
+      right: 10px;
+      animation: charBounce 2.2s infinite ease-in-out;
+    }
+    @keyframes charBounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(6deg); }
+    }
+
+    .char-walk {
+      bottom: -15px;
+      left: -20px;
+      animation: charWalk 3.5s infinite ease-in-out;
+    }
+    @keyframes charWalk {
+      0%, 100% { transform: translateX(0) rotate(-3deg); }
+      50% { transform: translateX(18px) rotate(4deg); }
+    }
+
+    .char-float {
+      top: -20px;
+      right: -10px;
+      animation: charFloat 3.2s infinite ease-in-out;
+    }
+    @keyframes charFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.08); }
+    }
+
+    /* HAND-DRAWN FRAME CONTAINER WITH MULTIPLE BORDER STYLES */
+    .sketch-frame-wrap {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      background: #ffffff;
+      padding: 14px;
+      box-shadow: 8px 12px 0px #2b2b2b, 0px 0px 0px 3px #2b2b2b, inset 0 0 15px rgba(0,0,0,0.03);
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      transform: rotate(-2deg);
+      transition: transform 0.3s ease;
+    }
+
+    .slide.active .sketch-frame-wrap {
+      animation: wiggle 6s infinite ease-in-out;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-2deg) scale(1); }
+      50% { transform: rotate(1.5deg) scale(1.02); }
+    }
+
+    .sketch-image-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 200px 10px 180px 10px/10px 180px 10px 200px;
+      border: 2px dashed #2b2b2b;
+    }
+
+    .sketch-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(80%) contrast(120%) sepia(20%);
+      transform: scale(1);
+      transition: filter 0.4s ease;
+      will-change: transform;
+    }
+
+    .slide.active .sketch-image-container img {
+      animation: kenBurnsZoom 12s infinite alternate ease-in-out;
+    }
+
+    @keyframes kenBurnsZoom {
+      0% { transform: scale(1) translate(0%, 0%); }
+      100% { transform: scale(1.22) translate(-3%, -2%); }
+    }
+
+    .hand-drawn-svg {
+      position: absolute;
+      inset: -15px;
+      width: calc(100% + 30px);
+      height: calc(100% + 30px);
+      pointer-events: none;
+      z-index: 6;
+      stroke: #2b2b2b;
+      stroke-width: 3;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    /* WHITEBOARD CARD STYLING */
+    .slide-card {
+      background: #ffffff;
+      border: 3px solid #2b2b2b;
+      border-radius: 20px 255px 20px 255px/255px 20px 255px 20px;
+      padding: 28px 24px;
+      box-shadow: 6px 8px 0px #2b2b2b;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .slide-card::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1deg);
+      width: 110px;
+      height: 26px;
+      background: rgba(243, 226, 185, 0.7);
+      border: 1px dashed rgba(0,0,0,0.15);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .meta-data {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      color: #e11d48;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .slide-card h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2b2b2b;
+      margin-bottom: 6px;
+      line-height: 0.9;
+    }
+
+    .slide-card p {
+      color: #4b5563;
+      font-size: 1.02rem;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    /* NAVIGATION BUTTONS */
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      background: #ffffff;
+      border: 3px solid #2b2b2b;
+      color: #2b2b2b;
+      width: 52px;
+      height: 52px;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px #2b2b2b;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-50%) scale(1.08);
+      box-shadow: 6px 6px 0px #e11d48;
+      border-color: #e11d48;
+      color: #e11d48;
+    }
+
+    .nav-btn:active {
+      transform: translateY(-50%) translate(2px, 2px);
+      box-shadow: 2px 2px 0px #2b2b2b;
+    }
+
+    .nav-btn.prev { left: 28px; }
+    .nav-btn.next { right: 28px; }
+
+    .slide-dots {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 50;
+      flex-wrap: wrap;
+      max-width: 80vw;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1c7bd;
+      border: 2px solid #2b2b2b;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: #e11d48;
+      width: 24px;
+      border-radius: 10px;
+    }
+
+    /* AUDIO WIDGET */
+    .music-widget {
+      position: fixed;
+      top: 28px;
+      right: 28px;
+      z-index: 50;
+      background: #ffffff;
+      border: 3px solid #2b2b2b;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #2b2b2b;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 4px 4px 0px #2b2b2b;
+      transition: all 0.2s ease;
+    }
+
+    .music-widget:hover {
+      box-shadow: 6px 6px 0px #e11d48;
+      color: #e11d48;
+    }
+
+    /* COVER SLIDE */
+    .cover-card {
+      background: #ffffff;
+      border: 4px solid #2b2b2b;
+      padding: 36px 48px;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      box-shadow: 10px 12px 0px #2b2b2b;
+      text-align: center;
+      max-width: 650px;
+      position: relative;
+    }
+
+    .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 16px;
+      border: 2px solid #2b2b2b;
+      border-radius: 20px;
+      background: #fef08a;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    /* VAULT CARD */
+    .vault-card {
+      background: #ffffff;
+      border: 3px solid #2b2b2b;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+      padding: 36px 28px;
+      text-align: center;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 8px 10px 0px #2b2b2b;
+    }
+
+    .vault-card input {
+      width: 100%;
+      background: #f8fafc;
+      border: 2px dashed #2b2b2b;
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #2b2b2b;
+      text-align: center;
+      outline: none;
+      font-size: 16px;
+      margin: 18px 0 12px 0;
+      font-family: inherit;
+    }
+
+    .btn-chase {
+      width: 100%;
+      background: #e11d48;
+      border: 2px solid #2b2b2b;
+      border-radius: 12px;
+      padding: 12px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px #2b2b2b;
+      transition: all 0.2s ease;
+    }
+
+    .btn-chase:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px #2b2b2b;
+    }
+
+    .notes-list {
+      display: none;
+      text-align: left;
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+    }
+
+    .note-item {
+      background: #fef9c3;
+      border: 2px solid #2b2b2b;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 2px 2px 0px #2b2b2b;
+    }
+
+    .note-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #e11d48;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .input-group {
+      display: none;
+      gap: 8px;
+    }
+
+    .input-group input {
+      margin: 0;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .btn-send {
+      background: #2b2b2b;
+      border: none;
+      border-radius: 8px;
+      padding: 0 14px;
+      cursor: pointer;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ANIMATED BACKGROUND LAYERS -->
+  <div class="animated-bg-layer"></div>
+  <div class="grid-overlay"></div>
+  <canvas id="sketchCanvas"></canvas>
+
+  <!-- AUDIO WIDGET -->
+  <button class="music-widget" id="audioBtn">
+    <i data-lucide="pencil" id="audioIcon" style="width: 16px; height: 16px;"></i>
+    <span id="audioText">Play Theme</span>
+  </button>
+  <audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-112188.mp3"></audio>
+
+  <!-- DECK CONTAINER -->
+  <div class="deck-container">
+
+    <!-- SLIDE 1: COVER WITH ENHANCED DOODLES & DANCER -->
+    <div class="slide slide-cover">
+      <div class="cover-card">
+        <!-- Additional Background Handcrafted Doodles -->
+        <svg class="doodle-element" style="top: -15px; left: -10px;" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="doodle-element" style="bottom: 10px; right: -15px;" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+
+        <!-- BIG ANIMATED VECTOR DANCING CHARACTER -->
+        <div class="big-dancer-container">
+          <svg class="note-float-1" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+          <svg class="note-float-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+
+          <svg class="big-dancer-svg" viewBox="0 0 100 120" fill="none" stroke="#2b2b2b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <g class="dancer-head">
+              <circle cx="50" cy="22" r="14" fill="#ffffff" />
+              <path d="M 44,20 A 1,1 0 0 0 46,20" stroke-width="3" />
+              <path d="M 54,20 A 1,1 0 0 0 56,20" stroke-width="3" />
+              <path d="M 44,26 Q 50,30 56,26" stroke="#e11d48" stroke-width="2.5" />
+            </g>
+            <path d="M 50,36 L 50,72" />
+            <path class="dancer-arm-left" d="M 50,42 L 20,25 M 20,25 L 10,40" stroke="#e11d48" />
+            <path class="dancer-arm-right" d="M 50,42 L 80,30 M 80,30 L 90,15" />
+            <path class="dancer-leg-left" d="M 50,72 L 30,95 M 30,95 L 20,112" />
+            <path class="dancer-leg-right" d="M 50,72 L 70,92 M 70,92 L 85,110" stroke="#e11d48" />
+          </svg>
+        </div>
+
+        <div class="badge-tag">
+          <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+          <span>Enhanced Handcrafted Motion Storyboard</span>
+        </div>
+        <h1 class="font-script" style="font-size: clamp(3rem, 7vw, 5rem); color: #2b2b2b; line-height: 1;">Sandra & Misha</h1>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.25rem); color: #4b5563; margin-top: 10px;">
+          "Ahlan ahlan ya 7ok4a, 22/8 elsa3h 10 t2ryban. Fully Loaded Graphics!"
+        </p>
+        <div style="margin-top: 20px; font-size: 13px; font-weight: 700; color: #e11d48; text-transform: uppercase;">
+          Use ← Arrow Keys → To Navigate
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 1: THE REAL STORY & DREAMS -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <!-- Handcrafted Doodles -->
+          <svg class="doodle-element doodle-star" width="36" height="36" viewBox="0 0 24 24" fill="#fef08a" stroke="#2b2b2b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg class="doodle-element doodle-heart" width="30" height="30" viewBox="0 0 24 24" fill="#e11d48" stroke="#2b2b2b" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 5,5 L 95,3 L 97,95 L 3,97 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="face5.jpg" alt="The Real Story">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #01</span>
+            <span>•</span>
+            <span>The Origin</span>
+          </div>
+          <h2 class="font-script">An Astonishing Truth</h2>
+          <p>Elmohm galy fkra any a3mlh 3lshan a2ol fy 7aga hya f3lyan mmkn n2ol 3lyha 2sha bgd y3ny w 5yalya kman mmkn anty nfsk mtsd2yhash bs hya f3lyan kant 7agha 72y2yh w m3aya tol elw2t w bfkr fyha w el7aga dyh hya any zman w ana s'3yr mkntsh b7b elbnat 5als w anty akid 3arfh 7agh zy kda kwys y3ny bs fy ftrh elly hya tanya w talta a3dady 7syt an elfkra dyh '3lt bs knt b'3lt nfsy y3ny.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 2: THE MANIFESTATION SCENARIOS -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-star" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+          <svg class="doodle-element doodle-spiral" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/></svg>
+
+          <svg class="sketch-character char-walk" width="60" height="70" viewBox="0 0 100 100" stroke="#2b2b2b" stroke-width="4" stroke-linecap="round" fill="none">
+            <circle cx="50" cy="20" r="12" />
+            <path d="M 50,32 L 50,60" />
+            <path d="M 50,40 L 30,55" />
+            <path d="M 50,40 L 70,30" />
+            <path d="M 50,60 L 35,88" />
+            <path d="M 50,60 L 65,85" />
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 3,8 L 97,4 L 94,96 L 5,92 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="pic2.PNG" alt="Manifestation Scenarios">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #02</span>
+            <span>•</span>
+            <span>Scenarios</span>
+          </div>
+          <h2 class="font-script">Middle School Dreams</h2>
+          <p>Bs knt bt5yl an fy yom mmkn a2abl 7d kwys m7trm msh mn elgyl elly a7na fyh dh by7b elnas w sfat 7lwh ktyr y3ny mkntsh at5yl an fy bnt mmkn tgm3hm za2d anha shatrh ah mfysh bnt mfyhash 3yob bs nsbyan perfect y3ny w elly b2a mmkn mtsd2yhwsh any tanya a3dady t5ylt el7war dh f3lan w 3shth aknh 72y2h w knt kol yom b7ot synryohat an 7sl kza w kza w kza m3 ay bnt 3moman w knt btm7 b3yd moooot.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3: LIVING IT IN MIND -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-heart" width="28" height="28" viewBox="0 0 24 24" fill="#fef08a" stroke="#2b2b2b" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+
+          <svg class="sketch-character char-bounce" width="50" height="50" viewBox="0 0 24 24" fill="#e11d48" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 6,4 L 94,6 L 96,94 L 4,95 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="pic6.png" alt="Living in Mind">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #03</span>
+            <span>•</span>
+            <span>Reality Check</span>
+          </div>
+          <h2 class="font-script">Dros & Walking Home</h2>
+          <p>B2y nnzl drs m3 b3d awslha elbyt el7agat elly a7na bn3mlha y3ny 3mry ma kont at5yl anha tygy fy yom w tt722 kol elly 3ayz a2wlh an elly a7na fyh dlw2ty dh ana kont 3ayshh zman bs fy dma'3y w baman eny btklm gd w lw d5lna fy 7th 3lmyh shwya b2a h2wl an 7rfyan ay 7agh btt5ylyha w t3yshyhaaaa fy 5yalk bgd bt7sl fy el72y2h.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 4: BIRTHDAY REFLECTIONS -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-star" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+
+          <svg class="sketch-character char-float" width="55" height="55" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13"></path>
+            <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 4,5 L 96,3 L 95,97 L 3,94 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="draw.png" alt="Birthday Reflections">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #04</span>
+            <span>•</span>
+            <span>Birthday Thoughts</span>
+          </div>
+          <h2 class="font-script">The Weight of Care</h2>
+          <p>Elmhm y3ny bma anh 3yd myladk y3ny f mmkn n2wl 7bh klam 7lwyn kda y3ny tb3an mhma ma h2wl msh h2dr atl3 elly fy 2lby lanh kda kda tel3 w wad7 mn'3yr 7agh y3ny tb3a mn'3yrk mknsh hygyly eld'3t w el3sbyh w elamrad elly 3dyt byha fy eldrasa dyh w el3sbyh el over w elahtmam elzayda w wg3 eldma'3 w eltrkyz elzyada 3n ellazm w el5wf eldaym 3lyky.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 5: THE EXHAUSTION & PATIENCE -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-spiral" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20v-1.26"/></svg>
+
+          <svg class="sketch-character char-walk" width="70" height="70" viewBox="0 0 100 100" stroke="#e11d48" stroke-width="4" stroke-linecap="round" fill="none">
+            <circle cx="35" cy="25" r="10" />
+            <path d="M 35,35 L 35,60" />
+            <path d="M 35,45 L 15,30" />
+            <path d="M 35,45 L 55,50" />
+            <path d="M 35,60 L 20,85" />
+            <path d="M 35,60 L 45,85" />
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 5,7 L 93,4 L 97,93 L 4,96 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="photo5.jpg" alt="Exhaustion and Patience">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #05</span>
+            <span>•</span>
+            <span>Patience</span>
+          </div>
+          <h2 class="font-script">Why I Stay Patient</h2>
+          <p>Kol dyh 7agat msh 2adr a2wlk 2d ayh morhka mooooooot b elnsbaly bs e4ta y3ny kol elly m5lyny sabr 3lyky bgd ank btt'yry 3lshany w msh 2adr a2wlk bgd 2d ayh el7agh dyh 3zymaaaa b elnsbely y3ny mkntsh at5yl an fy 7d by3ml kda aslan w 2d ayh ank bgd tyba w 3byta w 2lbk abyd w 3la nyatk w mt2drysh tst'3ny 3ny w btst7mly kol klamy w 2rfy w 3sbyty ah hya kolha bsbbk y3ny w 3lshan 5ayf 3lyky.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 6: YOUR UNIQUE NATURE -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-heart" width="32" height="32" viewBox="0 0 24 24" fill="#e11d48" stroke="#2b2b2b" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+
+          <svg class="sketch-character char-float" width="55" height="55" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 5,3 L 97,5 L 93,96 L 4,96 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="photo26.jpg" alt="Unique Nature">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #06</span>
+            <span>•</span>
+            <span>Special Bond</span>
+          </div>
+          <h2 class="font-script">No Other Girl</h2>
+          <p>Bs brdo mfy4 bnt bt3ml kda w tst'_hml kol dh astntg mn dh klam anty msh bt2wlyh bs ana b7sh an ana 7agh boommm gdn b elnsbalk w m4 3ayza t5sryha 7ta lw eh 7sl w anty 3mrk ma ht2dry tt5yly anty eh b elnsbely mhma 3mlty bgd ah htl3 3ynk w hz3lk w hnkd 3lyky bs 7rfyan zy ma enty fy 2lby msh htt7rky w 7abb a2wlk ank mbtfar2ysh tfkyry mhma 7sl y3ny mt5an2yn b2a ay 7agh bfkr fyky.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 7: THOUGHTS & AI DRAWINGS -->
+    <div class="slide">
+      <div class="slide-grid">
+        <div class="shape-stage">
+          <svg class="doodle-element doodle-star" width="35" height="35" viewBox="0 0 24 24" fill="#fef08a" stroke="#2b2b2b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+
+          <svg class="sketch-character char-bounce" width="55" height="55" viewBox="0 0 24 24" fill="#fef08a" stroke="#2b2b2b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+          </svg>
+          <div class="sketch-frame-wrap">
+            <svg class="hand-drawn-svg" viewBox="0 0 100 100">
+              <path d="M 4,4 L 96,4 L 96,96 L 4,96 Z" />
+            </svg>
+            <div class="sketch-image-container">
+              <img src="face5.jpg" alt="AI Drawings Gift">
+            </div>
+          </div>
+        </div>
+        <div class="slide-card">
+          <div class="meta-data">
+            <span>Chapter #07</span>
+            <span>•</span>
+            <span>The Gift</span>
+          </div>
+          <h2 class="font-script">The AI Drawings</h2>
+          <p>Bs sa3at bykon azay a5ls mnk zy aw2dk y3ny w b elnsbh l elrwswmat elly htfdly t2wlyly 3leha ai w bta3 dyh hdyh 3id myladk bs h2dmhelk 3ly 7agat b2a w htshwfyha b nfsk w htb2y m3aky ya 7ok4a atmna atmna atmna elsna dyh t2dri elly b3mlh m3aky w tsm3y klamy l ank shwfty bnfskkk an klamy 3ltol s7 w any msh b3ml kda t7kman fyky wla 7agh ana bs 5ayf 3lyky w msh 3ayz ay abn mra ygy gmbk aw ybslk bs yla 3mrk ma htfhmy dh w a5yran kol sana w enty tayba ya 3byth.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: SECRET VAULT -->
+    <div class="slide">
+      <div class="vault-card">
+        <i data-lucide="lock" style="color: #e11d48; width: 32px; height: 32px; margin: 0 auto 8px auto;"></i>
+        <h2 class="font-script" style="font-size: 3rem; color: #2b2b2b; margin-bottom: 0;">Sketchbook Vault</h2>
+        <p style="font-size: 12px; color: #e11d48; text-transform: uppercase; font-weight: 700; margin-top: 2px;">
+          Sandra & Misha Secret Notes
+        </p>
+
+        <form id="vaultForm">
+          <input type="password" id="vaultPass" placeholder="Passcode (Try: 'sandra' or 'misha')" required>
+          <button type="submit" class="btn-chase">Unlock Vault</button>
+        </form>
+
+        <div class="notes-list" id="notesList"></div>
+        <form class="input-group" id="noteForm">
+          <input type="text" id="noteInput" placeholder="Add a quick note..." required>
+          <button type="submit" class="btn-send"><i data-lucide="send" style="width: 14px; height: 14px;"></i></button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAVIGATION CONTROLS -->
+  <button class="nav-btn prev" id="prevBtn"><i data-lucide="chevron-left"></i></button>
+  <button class="nav-btn next" id="nextBtn"><i data-lucide="chevron-right"></i></button>
+
+  <div class="slide-dots" id="dotsContainer"></div>
+
+  <script>
+    /* WHITEBOARD PARTICLES & ANIMATED BACKGROUND PARTICLES */
+    const canvas = document.getElementById('sketchCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class SketchParticle {
+      constructor(x, y, isBurst = false) {
+        this.x = x || Math.random() * canvas.width;
+        this.y = y || Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 1;
+        this.speedY = isBurst ? (Math.random() - 0.5) * 4 : -(Math.random() * 0.6 + 0.2);
+        this.speedX = isBurst ? (Math.random() - 0.5) * 4 : (Math.random() - 0.5) * 0.5;
+        this.opacity = Math.random() * 0.6 + 0.2;
+        this.fade = isBurst ? 0.02 : 0;
+        
+        const colors = ['#2b2b2b', '#e11d48', '#d1c7bd', '#fef08a'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        if (this.fade > 0) {
+          this.opacity -= this.fade;
+        } else if (this.y < -10) {
+          this.y = canvas.height + 10;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new SketchParticle());
+    }
+
+    function handleParticles() {
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        if (particles[i].fade > 0 && particles[i].opacity <= 0) {
+          particles.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      handleParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('click', (e) => {
+      for (let i = 0; i < 8; i++) {
+        particles.push(new SketchParticle(e.clientX, e.clientY, true));
+      }
+    });
+
+    /* DECK NAVIGATION */
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('dotsContainer');
+    let currentSlide = 0;
+
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function goToSlide(index) {
+      slides.forEach((slide) => {
+        slide.classList.remove('active', 'prev-slide', 'next-slide');
+      });
+      dots[currentSlide].classList.remove('active');
+
+      currentSlide = (index + slides.length) % slides.length;
+
+      const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+      const nextIndex = (currentSlide + 1) % slides.length;
+
+      slides[currentSlide].classList.add('active');
+      slides[prevIndex].classList.add('prev-slide');
+      slides[nextIndex].classList.add('next-slide');
+
+      dots[currentSlide].classList.add('active');
+    }
+
+    goToSlide(0);
+
+    prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+      if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+    });
+
+    /* AUDIO & VAULT */
+    const audioBtn = document.getElementById('audioBtn');
+    const audioText = document.getElementById('audioText');
+    const bgMusic = document.getElementById('bgMusic');
+    let isPlaying = false;
+
+    audioBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        bgMusic.play();
+        audioText.innerText = 'Theme Playing';
+      } else {
+        bgMusic.pause();
+        audioText.innerText = 'Play Theme';
+      }
+      isPlaying = !isPlaying;
+    });
+
+    let loveNotes = [
+      { sender: "Misha", text: "Sandra, you are my favorite story.", date: "Note #1" },
+      { sender: "Sandra", text: "Every day with you is a joy.", date: "Note #2" }
+    ];
+
+    const vaultForm = document.getElementById('vaultForm');
+    const vaultPass = document.getElementById('vaultPass');
+    const notesList = document.encodeHTML ? null : document.getElementById('notesList');
+    const noteForm = document.getElementById('noteForm');
+    const noteInput = document.getElementById('noteInput');
+
+    vaultForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = vaultPass.value.toLowerCase();
+      if (val === 'sandra' || val === 'misha' || val === 'love') {
+        vaultForm.style.display = 'none';
+        document.getElementById('notesList').style.display = 'block';
+        noteForm.style.display = 'flex';
+        renderNotes();
+      } else {
+        alert("Locked! Passcode is: 'sandra' or 'misha'.");
+      }
+    });
+
+    function renderNotes() {
+      const listEl = document.getElementById('notesList');
+      listEl.innerHTML = '';
+      loveNotes.forEach(note => {
+        const div = document.createElement('div');
+        div.className = 'note-item';
+        div.innerHTML = `
+          <div class="note-header">
+            <span>${note.sender}</span>
+            <span>${note.date}</span>
+          </div>
+          <div style="font-size:14px; color:#2b2b2b;">${note.text}</div>
+        `;
+        listEl.appendChild(div);
+      });
+      listEl.scrollTop = listEl.scrollHeight;
+    }
+
+    noteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!noteInput.value.trim()) return;
+      loveNotes.push({
+        sender: "Sandra & Misha",
+        text: noteInput.value.trim(),
+        date: "Just now"
+      });
+      noteInput.value = '';
+      renderNotes();
+    });
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>
