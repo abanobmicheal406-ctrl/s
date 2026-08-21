@@ -67,6 +67,29 @@
       z-index: 2;
     }
 
+    /* -------------------------------------------------------------
+       FLOATING SANDOURA WATERMARK LAYER
+    ------------------------------------------------------------- */
+    .floating-sandoura {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Caveat', cursive;
+      font-size: clamp(6rem, 18vw, 16rem);
+      color: rgba(225, 29, 72, 0.04);
+      z-index: 3;
+      pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
+      animation: floatSandoura 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatSandoura {
+      0% { transform: translate(-50%, -52%) rotate(-3deg) scale(1); }
+      100% { transform: translate(-50%, -48%) rotate(3deg) scale(1.03); }
+    }
+
     .font-script {
       font-family: 'Caveat', cursive;
     }
@@ -638,6 +661,9 @@
   <div class="grid-overlay"></div>
   <canvas id="sketchCanvas"></canvas>
 
+  <!-- FLOATING SANDOURA WATERMARK -->
+  <div class="floating-sandoura">Sandoura</div>
+
   <!-- AUDIO WIDGET -->
   <button class="music-widget" id="audioBtn">
     <i data-lucide="pencil" id="audioIcon" style="width: 16px; height: 16px;"></i>
@@ -902,7 +928,7 @@
               <path d="M 4,4 L 96,4 L 96,96 L 4,96 Z" />
             </svg>
             <div class="sketch-image-container">
-              <img src="c39.jpg" alt="AI Drawings Gift">
+              <img src="face5.jpg" alt="AI Drawings Gift">
             </div>
           </div>
         </div>
@@ -1113,7 +1139,7 @@
 
     function renderNotes() {
       const listEl = document.getElementById('notesList');
-      listEl.innerHTML = '';
+      listEl.innerHTML = ``;
       loveNotes.forEach(note => {
         const div = document.createElement('div');
         div.className = 'note-item';
